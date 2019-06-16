@@ -11,6 +11,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -18,6 +19,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.cookforyou.database.Database;
+import com.example.cookforyou.model.Recipe;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -29,14 +32,15 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    private static final String TAG = "MainActivity";
 
     private FirebaseAuth mAuth;
     private FirebaseStorage mStorage;
-//    private FirebaseDatabase mDatabase;
     private FirebaseFirestore db;
     private ArrayAdapter<String> adapter;
 
@@ -77,7 +81,6 @@ public class MainActivity extends AppCompatActivity
         ArrayList<String> arrayIngredients = new ArrayList<>();
         arrayIngredients.addAll(Arrays.asList(getResources().getStringArray(R.array.array_ingredients)));
         adapter = new ArrayAdapter<>(MainActivity.this, android.R.layout.simple_list_item_1, arrayIngredients);
-
         // add auth change listener
         mAuth.addAuthStateListener(new FirebaseAuth.AuthStateListener() {
             @Override
@@ -129,6 +132,7 @@ public class MainActivity extends AppCompatActivity
         });
 
     }
+
 
     @Override
     public void onBackPressed() {
@@ -194,7 +198,6 @@ public class MainActivity extends AppCompatActivity
             ft.commit();
         }
     }
-
 
         @SuppressWarnings("StatementWithEmptyBody")
     @Override

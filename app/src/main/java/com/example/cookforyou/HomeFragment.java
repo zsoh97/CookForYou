@@ -112,7 +112,7 @@ public class HomeFragment extends Fragment implements Dialog.AddIngredientDialog
         dialog.show(getFragmentManager(), "Dialog");
     }
 
-        @Override
+    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         MenuItem item = menu.findItem(R.id.search_action);

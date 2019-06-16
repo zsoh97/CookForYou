@@ -1,4 +1,4 @@
-package com.example.cookforyou.database;
+package com.example.cookforyou.network;
 
 import android.net.Uri;
 import android.support.annotation.NonNull;
@@ -76,7 +76,7 @@ public class RecipeFetcher {
      * @param searchQuery The search query to perform
      * @param pageNum The page number of the API to receive from
      */
-    public void fetch(@NonNull String[] ingredients, @NonNull String searchQuery,
+    public List<Recipe> fetch(@NonNull String[] ingredients, @NonNull String searchQuery,
                         int pageNum) {
        String ingredientQuery = buildIngredientsQuery(ingredients);
        String queryUrl = RECIPE_PUPPY_API_ENDPOINT
@@ -95,15 +95,60 @@ public class RecipeFetcher {
 
            //This method attempts to parse the json data that is received.
            List<Recipe> parsedData = parseJsonString(jsonString);
-           //TODO Right now this method simply prints out the recipes that have been fetched. Make it return and do something with it.
-           for(Recipe s : parsedData) {
-               Log.i(TAG, s + "\n");
-           }
+           return parsedData;
        } catch (IOException e) {
            Log.e(TAG, "Unable to retrieve json data", e);
        } catch (JSONException e) {
            Log.e(TAG, "Unable to parse json data", e);
        }
+       return null;
+    }
+
+    /**
+     * A utility method to open a connection to API.
+     *
+     * @param urlSpec The specification of the url
+     * @return A string of data received from opening a connection
+     * @throws IOException If there is some error in connection.
+     */
+    String getUrlString(String urlSpec) throws IOException {
+        return new String(getUrlBytes(urlSpec));
+    }
+
+    /**
+     * Opens a HTTP connection to API and requests the data.
+     *
+     * @param urlSpec The specification of the url.
+     * @return A byte[] array of data from the output stream.
+     * @throws IOException If connection fails, HTTP response code not 200.
+     */
+    byte[] getUrlBytes(String urlSpec) throws IOException {
+        URL url = new URL(urlSpec);
+        //Opens up a HTTP connection
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        try {
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            //Opens up the input stream of the connection.
+            InputStream in = connection.getInputStream();
+
+            //If API is down/unresponsive, it will throw a exception
+            if(connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+                throw new IOException(connection.getResponseMessage() +
+                        ": with" +
+                        urlSpec);
+            }
+
+            //Buffers to read in data for faster speed.
+            int bytesRead;
+            byte[] buffer = new byte[1024];
+            while ((bytesRead = in.read(buffer)) > 0) {
+                out.write(buffer, 0, bytesRead);
+            }
+            out.close();
+            return out.toByteArray();
+        } finally {
+            connection.disconnect();
+        }
     }
 
     /**
@@ -151,7 +196,7 @@ public class RecipeFetcher {
             r.setRecipeUrl(current.getString("href"));
             r.setIngredients(parseIngredientJson(current.getString("ingredients")));
             r.setThumbnailUrl(current.getString("thumbnail"));
-
+            r.setId(null);
             recipes.add(r);
         }
         return recipes;
@@ -185,54 +230,12 @@ public class RecipeFetcher {
      * @return A list of ingredients
      */
     private List<String> parseIngredientJson(String jsonIngredient) {
-        return new ArrayList<>(Arrays.asList(jsonIngredient.split(",")));
-    }
-
-    /**
-     * A utility method to open a connection to API.
-     *
-     * @param urlSpec The specification of the url
-     * @return A string of data received from opening a connection
-     * @throws IOException If there is some error in connection.
-     */
-    private String getUrlString(String urlSpec) throws IOException {
-        return new String(getUrlBytes(urlSpec));
-    }
-
-    /**
-     * Opens a HTTP connection to API and requests the data.
-     *
-     * @param urlSpec The specification of the url.
-     * @return A byte[] array of data from the output stream.
-     * @throws IOException If connection fails, HTTP response code not 200.
-     */
-    private byte[] getUrlBytes(String urlSpec) throws IOException {
-        URL url = new URL(urlSpec);
-        //Opens up a HTTP connection
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        try {
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            //Opens up the input stream of the connection.
-            InputStream in = connection.getInputStream();
-
-            //If API is down/unresponsive, it will throw a exception
-            if(connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-                throw new IOException(connection.getResponseMessage() +
-                        ": with" +
-                        urlSpec);
-            }
-
-            //Buffers to read in data for faster speed.
-            int bytesRead;
-            byte[] buffer = new byte[1024];
-            while ((bytesRead = in.read(buffer)) > 0) {
-                out.write(buffer, 0, bytesRead);
-            }
-            out.close();
-            return out.toByteArray();
-        } finally {
-            connection.disconnect();
+        List<String> results = new ArrayList<>();
+        String[] splitByCommas = jsonIngredient.split(",");
+        for(String ingredient : splitByCommas) {
+            results.add(ingredient.trim());
         }
+        return results;
     }
 
     /**

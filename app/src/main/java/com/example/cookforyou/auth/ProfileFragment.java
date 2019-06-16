@@ -28,7 +28,6 @@ public class ProfileFragment extends Fragment {
 
     private FirebaseAuth mAuth;
     private FirebaseStorage mStorage;
-    //    private FirebaseDatabase mDatabase;
     private FirebaseFirestore db;
     public ProfileFragment(){
 

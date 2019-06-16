@@ -13,6 +13,8 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.example.cookforyou.model.Recipe;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -41,7 +43,7 @@ public class Database {
 
     private FirebaseFirestore mDatabase;
     private OnQueryCompleteListener mOnQueryCompleteListener;
-    private List<Recipe> mQueryResult;
+    private HashSet<Recipe> mQueryResult;
 
     private Database(FirebaseFirestore database) {
         mDatabase = database;
@@ -76,6 +78,22 @@ public class Database {
         }
         return result;
     }
+    /**
+     * Adds a collectino of recipe to the database.
+     *
+     * <p>
+     *     Adds a collection of recipes to the database at one go.
+     * </p>
+     * @param recipes The collection of recipe to add to the database
+     * @return A task regarding the add operation being executed.
+     */
+    public Task<DocumentReference> addAllRecipe(Collection<Recipe> recipes) {
+        Task<DocumentReference> task = null;
+        for(Recipe recipe : recipes) {
+            task = addRecipe(recipe);
+        }
+        return task;
+    }
 
     /**
      * Queries the database with a given list of ingredients.
@@ -99,11 +117,10 @@ public class Database {
      * @param ingredients The list of all the ingredients to query the database about.
      * @return The instance of the database that called this method.
      */
-    //TODO implement some sort of comparator to sort according to relevance on the task list.
-    public Database query(List<String> ingredients) {
+    public Database query(final List<String> ingredients) {
         final List<Task<QuerySnapshot>> taskList = new ArrayList<>();
         //In case the list storing results is null.
-        mQueryResult = new ArrayList<>();
+        mQueryResult = new HashSet<>();
 
         for(String ingredient : ingredients) {
             //The query based upon this ingredient
@@ -116,7 +133,7 @@ public class Database {
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                         @Override
                         public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                            //Once query is complete, add all recipes into the query result list
+                            //Once query is complete, add all recipes into the query result Hashset
                             for(QueryDocumentSnapshot query : task.getResult()) {
                                 Recipe recipe = query.toObject(Recipe.class);
                                 Log.i(TAG, "Fetched: " + recipe);
@@ -133,9 +150,12 @@ public class Database {
                     @Override
                     public void onComplete(@NonNull Task<List<Task<?>>> task) {
                         //Perform callback and return the list of recipes retrieved.
-                        mOnQueryCompleteListener.onComplete(retrieveQuery());
-                        //Makes a new list so that multiple async queries do not overlap results.
-                        mQueryResult = new ArrayList<>();
+                        List<Recipe> queryResults = retrieveQuery();
+                        //Passes off the ranking job to static Ranker class.
+                        Ranker.rankOnQuery(queryResults, ingredients, Ranker.DESCENDING);
+                        mOnQueryCompleteListener.onComplete(queryResults);
+                        //Makes a new HashSet so that multiple async queries do not overlap results.
+                        mQueryResult = new HashSet<>();
                     }
                 });
         return this;

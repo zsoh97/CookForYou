@@ -36,7 +36,7 @@ import java.io.IOException;
 import static android.app.Activity.RESULT_OK;
 
 public class RegisterFragment extends Fragment {
-
+    private static final String TAG = "RegisterFragment";
 
     private static int PICK_IMAGE = 123;
 
@@ -51,7 +51,6 @@ public class RegisterFragment extends Fragment {
     Uri imagePath;
 
     String email, password, name;
-
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
@@ -137,7 +136,7 @@ public class RegisterFragment extends Fragment {
                             String uid = mAuth.getCurrentUser().getUid();
                             UserDetails currentUser = new UserDetails(name, uid);
                             currentUser.createEntry();
-                            sendUSerData();
+                            sendUserData();
                             mAuth.signOut();
                             FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
                             ft.replace(R.id.content_frame, new LoginFragment());
@@ -167,7 +166,7 @@ public class RegisterFragment extends Fragment {
         return view;
     }
 
-    private void sendUSerData(){
+    private void sendUserData(){
         String uid = mAuth.getCurrentUser().getUid();
         mDatabase = FirebaseDatabase.getInstance();
         DatabaseReference mRef = mDatabase.getReference(uid);
