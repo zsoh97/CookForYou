@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -62,10 +63,16 @@ public class HomeFragment extends Fragment implements Dialog.AddIngredientDialog
                     Toast.makeText(getActivity().getApplicationContext(), "No ingredient selected", Toast.LENGTH_SHORT).show();
                 } else {
                     StringBuilder sb = new StringBuilder();
-                    for (Ingredient ingredient : mAdapter.checkedIngredients) {
-                        sb.append(ingredient.getmText().toLowerCase().trim() + " ");
+                    String[] ingredients = new String[mAdapter.checkedIngredients.size()];
+                    for(int i = 0; i < ingredients.length; i++) {
+                        ingredients[i] = mAdapter.checkedIngredients.get(i).getmText();
                     }
-                    Toast.makeText(getContext().getApplicationContext(), sb.toString().trim(), Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(getContext().getApplicationContext(), sb.toString().trim(), Toast.LENGTH_SHORT).show();
+                    Fragment resultsFragment = ResultsFragment.newInstance(ingredients);
+                    FragmentManager fm = getActivity().getSupportFragmentManager();
+                    fm.beginTransaction()
+                            .replace(R.id.content_frame, resultsFragment)
+                            .commit();
                 }
             }
         });
@@ -84,6 +91,7 @@ public class HomeFragment extends Fragment implements Dialog.AddIngredientDialog
         ingredientList = new ArrayList<>();
         ingredientList.add(new Ingredient("banana"));
         ingredientList.add(new Ingredient("butter"));
+        ingredientList.add(new Ingredient("flour"));
         ingredientList.add(new Ingredient("cheese"));
         ingredientList.add(new Ingredient("chicken breast"));
         ingredientList.add(new Ingredient("duck"));
