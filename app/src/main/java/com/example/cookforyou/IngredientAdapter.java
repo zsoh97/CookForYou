@@ -67,7 +67,6 @@ public class IngredientAdapter extends RecyclerView.Adapter<IngredientAdapter.In
             @Override
             public void onItemClick(View v, int pos){
                 CheckBox checkBox = (CheckBox) v;
-                Ingredient ingredient = ingredientList.get(pos);
                 if(checkBox.isChecked()){
                     currentIngredient.setSelected(true);
                     checkedIngredients.add(currentIngredient);

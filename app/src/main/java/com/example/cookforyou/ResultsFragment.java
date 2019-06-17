@@ -1,7 +1,7 @@
 package com.example.cookforyou;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -18,8 +17,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.example.cookforyou.database.Database;
 import com.example.cookforyou.model.Recipe;
@@ -29,7 +26,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class ResultsFragment extends Fragment {
+public class ResultsFragment extends Fragment implements ResultsAdapter.OnRecipeClickListener {
     private static final String TAG = "ResultsFragment";
 
     private static final String QUERY_KEY = "ingredientQuery";
@@ -37,7 +34,7 @@ public class ResultsFragment extends Fragment {
 
     private RecyclerView mRecyclerView;
     private List<Recipe> mRecipeList = new ArrayList<>();
-    private ThumbnailDownloader<ResultsHolder> mThumbnailDownloader;
+    public static ThumbnailDownloader<ResultsAdapter.ResultsHolder> mThumbnailDownloader;
 
     public static ResultsFragment newInstance(String[] ingredientQuery) {
         Bundle bundle = new Bundle();
@@ -58,9 +55,9 @@ public class ResultsFragment extends Fragment {
         Handler responseHandler = new Handler();
         mThumbnailDownloader = new ThumbnailDownloader<>(responseHandler);
         mThumbnailDownloader.setThumbnailDownloadListener(
-                new ThumbnailDownloader.ThumbnailDownloadListener<ResultsHolder>() {
+                new ThumbnailDownloader.ThumbnailDownloadListener<ResultsAdapter.ResultsHolder>() {
                     @Override
-                    public void onThumbnailDownloaded(ResultsHolder target, Bitmap thumbnail) {
+                    public void onThumbnailDownloaded(ResultsAdapter.ResultsHolder target, Bitmap thumbnail) {
                         Log.i(TAG, "Setting downloaded thumbnail");
                         Drawable drawable = new BitmapDrawable(getResources(), thumbnail);
                         target.bindDrawable(drawable);
@@ -109,7 +106,7 @@ public class ResultsFragment extends Fragment {
 
     private void setupAdapter() {
         if(isAdded()) {
-            mRecyclerView.setAdapter(new ResultsAdapter(mRecipeList));
+            mRecyclerView.setAdapter(new ResultsAdapter(mRecipeList, getContext(), this));
         }
     }
 
@@ -131,60 +128,11 @@ public class ResultsFragment extends Fragment {
         }
     }
 
-    private class ResultsHolder extends RecyclerView.ViewHolder {
-
-        private TextView mItemTextView;
-        private ImageView mItemImageView;
-
-        public ResultsHolder(@NonNull View itemView) {
-            super(itemView);
-
-            mItemImageView = itemView.findViewById(R.id.item_image_view);
-            mItemTextView = itemView.findViewById(R.id.item_text_view);
-        }
-
-        public void bindDrawable(Drawable drawable) {
-            mItemImageView.setImageDrawable(drawable);
-        }
-
-        public void bindTitle(String title) {
-            mItemTextView.setText(title);
-        }
-    }
-
-    private class ResultsAdapter extends RecyclerView.Adapter<ResultsHolder> {
-
-        private List<Recipe> mRecipeList;
-
-        public ResultsAdapter(List<Recipe> recipeList){
-            mRecipeList = recipeList;
-        }
-
-        @NonNull
-        @Override
-        public ResultsHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-            View v = LayoutInflater
-                    .from(getActivity())
-                    .inflate(
-                            R.layout.list_item_results,
-                            viewGroup,
-                            false
-                            );
-            return new ResultsHolder(v);
-        }
-
-        @Override
-        public void onBindViewHolder(@NonNull ResultsHolder resultsHolder, int i) {
-            Recipe recipe = mRecipeList.get(i);
-            Drawable placeholder = getResources().getDrawable(R.drawable.banana);
-            resultsHolder.bindDrawable(placeholder);
-            mThumbnailDownloader.queueThumbnail(resultsHolder, recipe.getThumbnailUrl());
-            resultsHolder.bindTitle(recipe.getTitle());
-        }
-
-        @Override
-        public int getItemCount() {
-            return mRecipeList.size();
-        }
+    public void onRecipeClick(int position){
+        Recipe selectedRecipe = mRecipeList.get(position);
+        String recipeUrl = selectedRecipe.getRecipeUrl();
+        Intent intent = new Intent(getActivity(), RecipeActivity.class);
+        intent.putExtra("recipeLink", recipeUrl);
+        startActivity(intent);
     }
 }
