@@ -30,8 +30,7 @@ public class ResultsFragment extends Fragment implements ResultsAdapter.OnRecipe
     private static final String TAG = "ResultsFragment";
 
     private static final String QUERY_KEY = "ingredientQuery";
-
-
+    
     private RecyclerView mRecyclerView;
     private List<Recipe> mRecipeList = new ArrayList<>();
     public static ThumbnailDownloader<ResultsAdapter.ResultsHolder> mThumbnailDownloader;

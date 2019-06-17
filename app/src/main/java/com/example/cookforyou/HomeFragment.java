@@ -62,16 +62,15 @@ public class HomeFragment extends Fragment implements Dialog.AddIngredientDialog
                 if(mAdapter.checkedIngredients.isEmpty()){
                     Toast.makeText(getActivity().getApplicationContext(), "No ingredient selected", Toast.LENGTH_SHORT).show();
                 } else {
-                    StringBuilder sb = new StringBuilder();
                     String[] ingredients = new String[mAdapter.checkedIngredients.size()];
                     for(int i = 0; i < ingredients.length; i++) {
                         ingredients[i] = mAdapter.checkedIngredients.get(i).getmText();
                     }
-//                    Toast.makeText(getContext().getApplicationContext(), sb.toString().trim(), Toast.LENGTH_SHORT).show();
                     Fragment resultsFragment = ResultsFragment.newInstance(ingredients);
                     FragmentManager fm = getActivity().getSupportFragmentManager();
                     fm.beginTransaction()
                             .replace(R.id.content_frame, resultsFragment)
+                            .addToBackStack("ResultsFragment")
                             .commit();
                 }
             }
