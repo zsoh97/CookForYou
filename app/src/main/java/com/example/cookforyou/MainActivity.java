@@ -19,6 +19,9 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.cookforyou.auth.LoginFragment;
+import com.example.cookforyou.auth.ProfileFragment;
+import com.example.cookforyou.auth.RegisterFragment;
 import com.example.cookforyou.database.Database;
 import com.example.cookforyou.model.Recipe;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -118,8 +121,6 @@ public class MainActivity extends AppCompatActivity
                             Picasso.get().load(uri).into(profilePic);
                         }
                     });
-
-
                 } else {
                     // show items in nav bar
                     Menu navMenuLogIn = navigationView.getMenu();
@@ -140,7 +141,12 @@ public class MainActivity extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+            int count = getSupportFragmentManager().getBackStackEntryCount();
+            if(count == 0) {
+                super.onBackPressed();
+            } else {
+                getSupportFragmentManager().popBackStack();
+            }
         }
     }
 
@@ -178,17 +184,17 @@ public class MainActivity extends AppCompatActivity
 
             fragment = new HomeFragment();
         } else if (id == R.id.nav_register) {
-//            fragment = new RegisterFragment();
+            fragment = new RegisterFragment();
 
         } else if (id == R.id.nav_login) {
-//            fragment = new LoginFragment();
+            fragment = new LoginFragment();
 
         } else if (id == R.id.nav_logout) {
             FirebaseAuth.getInstance().signOut();
             fragment = new HomeFragment();
 
         }else if (id == R.id.nav_update_profile){
-//            fragment = new ProfileFragment();
+            fragment = new ProfileFragment();
         }
 
         //replacing the fragment
@@ -214,6 +220,7 @@ public class MainActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
 
 //    check loginExample for this
 }

@@ -1,6 +1,8 @@
 package com.example.cookforyou.auth;
 
+import android.animation.Animator;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -8,11 +10,22 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewPropertyAnimator;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.example.cookforyou.HomeFragment;
 import com.example.cookforyou.R;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -23,8 +36,11 @@ import com.google.firebase.auth.FirebaseAuth;
 public class LoginFragment extends Fragment  {
 
     private EditText emailEditText, passwordEditText;
+    private ImageView mWelcomeImage;
+    private TextView mWelcomeBackText;
     private Button loginBtn;
     private TextView forgotPw;
+    private LinearLayout mLoginPageLayout, mLoginWaitingPageLayout, mWelcomeBackPageLayout;
 
     private FirebaseAuth mAuth;
 
@@ -40,7 +56,15 @@ public class LoginFragment extends Fragment  {
         passwordEditText = getActivity().findViewById(R.id.loginPasswordEditText);
         loginBtn = getActivity().findViewById(R.id.loginBtn);
         forgotPw = getActivity().findViewById(R.id.fpTextView);
-//        progressBar = getActivity().findViewById(R.id.loginProgressBar);
+        mLoginPageLayout = getActivity().findViewById(R.id.login_page_view);
+        mLoginWaitingPageLayout = getActivity().findViewById(R.id.login_waiting_page_view);
+        mWelcomeBackPageLayout = getActivity().findViewById(R.id.welcome_back_page_view);
+        mWelcomeBackText = getActivity().findViewById(R.id.welcome_back_text_view);
+        mWelcomeImage = getActivity().findViewById(R.id.welcome_back_image_view);
+
+        Glide.with(getActivity())
+                .load(R.drawable.welcome_back_image)
+                .into(mWelcomeImage);
 
         loginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -54,6 +78,7 @@ public class LoginFragment extends Fragment  {
             public void onClick(View v) {
                 FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
                 ft.replace(R.id.content_frame, new ResetPasswordFragment());
+                ft.addToBackStack(null);
                 ft.commit();
             }
         });
@@ -66,30 +91,31 @@ public class LoginFragment extends Fragment  {
         email = emailEditText.getText().toString();
         password = passwordEditText.getText().toString();
 
-        if (email.isEmpty()) {
-            Toast.makeText(getActivity().getApplicationContext(), "Please enter email...", Toast.LENGTH_LONG).show();
+        if (email.isEmpty() && password.isEmpty()) {
+            emailEditText.setError("This field cannot be blank");
+            passwordEditText.setError("This field cannot be blank");
             return;
         }
         if (password.isEmpty()) {
-            Toast.makeText(getActivity().getApplicationContext(), "Please enter password!", Toast.LENGTH_LONG).show();
+            passwordEditText.setError("This field cannot be blank");
+            return;
+        }
+        if(email.isEmpty()) {
+            emailEditText.setError("This field cannot be blank");
             return;
         }
 
+        beginSigninView();
         //your login code here....
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if(task.isSuccessful()){
-//                            progressBar.setVisibility(View.GONE);
-                            Toast.makeText(getActivity().getApplicationContext(), "Login successful", Toast.LENGTH_SHORT).show();
-                            FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
-                            ft.replace(R.id.content_frame, new HomeFragment());
-                            ft.commit();
+                            completeSignin();
                         } else {
                             Log.d("testing ", "onComplete: " + task.toString());
-                            Toast.makeText(getActivity().getApplicationContext(), "Login Failed. Incorrect username or password", Toast.LENGTH_SHORT).show();
-//                            progressBar.setVisibility(View.GONE);
+                            failedSigninView();
                         }
                     }
                 });
@@ -108,5 +134,96 @@ public class LoginFragment extends Fragment  {
         return view;
     }
 
+    private void beginSigninView() {
+        crossfade(mLoginPageLayout, mLoginWaitingPageLayout,
+                getResources().getInteger(android.R.integer.config_shortAnimTime), null);
+    }
 
+    private void completeSignin() {
+        Animator.AnimatorListener listener = new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                mLoginWaitingPageLayout.setVisibility(View.GONE);
+                final Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
+                        ft.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out);
+                        ft.replace(R.id.content_frame, new HomeFragment());
+                        ft.commit();
+                    }
+                }, 2000);
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+
+            }
+        };
+
+        mWelcomeBackText.setText(getString(R.string.welcome_message, mAuth.getCurrentUser().getDisplayName()));
+        crossfade(mLoginWaitingPageLayout,
+                mWelcomeBackPageLayout,
+                getResources().getInteger(android.R.integer.config_shortAnimTime),
+                listener);
+
+    }
+
+    private void failedSigninView() {
+        Toast.makeText(getActivity().getApplicationContext(), "Login Failed. Incorrect username or password", Toast.LENGTH_SHORT).show();
+        crossfade(mLoginWaitingPageLayout, mLoginPageLayout,
+                getResources().getInteger(android.R.integer.config_shortAnimTime),
+                null);
+    }
+
+    private void crossfade(final View from, final View to, final int duration,
+                           final Animator.AnimatorListener listener) {
+        to.setAlpha(0f);
+        to.setVisibility(View.VISIBLE);
+
+        to.animate()
+                .alpha(1f)
+                .setDuration(duration)
+                .setListener(null);
+
+        ViewPropertyAnimator animator = from.animate()
+                .alpha(0f)
+                .setDuration(duration);
+        if(listener == null) {
+            animator.setListener(new Animator.AnimatorListener() {
+                @Override
+                public void onAnimationStart(Animator animation) {
+
+                }
+
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    from.setVisibility(View.GONE);
+                }
+
+                @Override
+                public void onAnimationCancel(Animator animation) {
+
+                }
+
+                @Override
+                public void onAnimationRepeat(Animator animation) {
+
+                }
+            });
+        } else {
+            animator.setListener(listener);
+        }
+    }
 }

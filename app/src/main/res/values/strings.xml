@@ -31,4 +31,16 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="log_in_wait_message">Logging you in…</string>
+    <string name="account_login">Account login</string>
+    <string name="login_button_text">Login</string>
+    <string name="forgot_password_text">Forgot Password?</string>
+    <string name="welcome_message">Welcome to CookForYou, %1$s!</string>
+    <string name="welcome_app_message">Welcome to\n Cook For You</string>
+    <string name="new_user_message">New user?</string>
+    <string name="register_button">Register</string>
+    <string name="name_hint">Name</string>
+    <string name="password_hint">Password</string>
+    <string name="email_hint">Email</string>
+    <string name="register_account_text">Register new account</string>
 </resources>

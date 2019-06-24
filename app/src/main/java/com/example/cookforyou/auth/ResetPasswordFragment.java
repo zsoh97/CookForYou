@@ -21,7 +21,6 @@ public class ResetPasswordFragment extends Fragment {
 
     private EditText emailEditText;
     private Button resetBtn;
-//    private ProgressBar progressBar;
 
     private FirebaseAuth mAuth;
 
@@ -35,7 +34,6 @@ public class ResetPasswordFragment extends Fragment {
 
         mAuth = FirebaseAuth.getInstance();
 
-//        progressBar = getActivity().findViewById(R.id.resetprogressBar);
 
 
         resetBtn.setOnClickListener(new View.OnClickListener() {
@@ -49,20 +47,19 @@ public class ResetPasswordFragment extends Fragment {
     }
 
     private void resetUserAccount() {
-//        progressBar.setVisibility(View.VISIBLE);
 
         String email;
         email = emailEditText.getText().toString().trim();
 
 
         if (TextUtils.isEmpty(email)) {
-            Toast.makeText(getActivity().getApplicationContext(), "Please enter email...", Toast.LENGTH_LONG).show();
+            emailEditText.setError("This field cannot be empty");
             return;
         }
 
         //your resetpasswordcode here
         if(TextUtils.isEmpty(email)){
-            Toast.makeText(getActivity().getApplicationContext(), "Please enter a valid email", Toast.LENGTH_SHORT).show();
+            emailEditText.setError("This field cannot be empty");
         } else {
             mAuth.sendPasswordResetEmail(email).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override

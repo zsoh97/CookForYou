@@ -20,6 +20,7 @@ import android.view.ViewGroup;
 
 import com.example.cookforyou.database.Database;
 import com.example.cookforyou.model.Recipe;
+import com.example.cookforyou.network.RecipeFetcher;
 import com.example.cookforyou.network.ThumbnailDownloader;
 
 import java.util.ArrayList;
@@ -30,7 +31,7 @@ public class ResultsFragment extends Fragment implements ResultsAdapter.OnRecipe
     private static final String TAG = "ResultsFragment";
 
     private static final String QUERY_KEY = "ingredientQuery";
-    
+
     private RecyclerView mRecyclerView;
     private List<Recipe> mRecipeList = new ArrayList<>();
     public static ThumbnailDownloader<ResultsAdapter.ResultsHolder> mThumbnailDownloader;
@@ -112,6 +113,7 @@ public class ResultsFragment extends Fragment implements ResultsAdapter.OnRecipe
     private class FetchRecipeTask extends AsyncTask<String , Void, Database> {
         @Override
         protected Database doInBackground(String... strings) {
+            new RecipeFetcher().fetch(new String[] {"cheese"}, "", 1);
             return Database.getInstance().query(Arrays.asList(strings));
         }
 

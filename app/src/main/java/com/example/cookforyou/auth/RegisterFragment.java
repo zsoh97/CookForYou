@@ -1,6 +1,8 @@
 package com.example.cookforyou.auth;
 
+import android.content.ContentResolver;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
@@ -19,6 +21,8 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.bumptech.glide.load.model.ResourceLoader;
+import com.example.cookforyou.HomeFragment;
 import com.example.cookforyou.R;
 import com.example.cookforyou.model.UserDetails;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -31,7 +35,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -104,32 +110,37 @@ public class RegisterFragment extends Fragment {
     }
 
     private void registerNewUser() {
-        progressBar.setVisibility(View.VISIBLE);
         //get the actual String or text that the user type
         email = emailEditText.getText().toString();
         password = passwordEditText.getText().toString();
         name = nameEditText.getText().toString();
+        boolean anyEmptyFields = false;
         final StorageReference mRef = mStorage.getReference();
 
         if (TextUtils.isEmpty(email)) {
-            Toast.makeText(getActivity().getApplicationContext(), "Please enter email...", Toast.LENGTH_LONG).show();
-            return;
+            anyEmptyFields = true;
+            emailEditText.setError("This field cannot be empty");
         }
         if (TextUtils.isEmpty(password)) {
-            Toast.makeText(getActivity().getApplicationContext(), "Please enter password!", Toast.LENGTH_LONG).show();
-            return;
+            anyEmptyFields = true;
+            passwordEditText.setError("This field cannot be empty");
         }
 
         if (TextUtils.isEmpty(name)) {
-            Toast.makeText(getActivity().getApplicationContext(), "Please enter name!", Toast.LENGTH_LONG).show();
+            anyEmptyFields = true;
+            nameEditText.setError("This field cannot be empty");
+        }
+
+        if(anyEmptyFields) {
             return;
         }
 
+
+        progressBar.setVisibility(View.VISIBLE);
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-
                         if (task.isSuccessful()) {
                             Toast.makeText(getActivity().getApplicationContext(), "Registration successful!", Toast.LENGTH_LONG).show();
                             progressBar.setVisibility(View.GONE);
@@ -137,9 +148,8 @@ public class RegisterFragment extends Fragment {
                             UserDetails currentUser = new UserDetails(name, uid);
                             currentUser.createEntry();
                             sendUserData();
-                            mAuth.signOut();
                             FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
-                            ft.replace(R.id.content_frame, new LoginFragment());
+                            ft.replace(R.id.content_frame, new HomeFragment());
                             ft.commit();
                         }
                         else {
@@ -157,7 +167,6 @@ public class RegisterFragment extends Fragment {
         // Required empty public constructor
     }
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
@@ -171,7 +180,17 @@ public class RegisterFragment extends Fragment {
         mDatabase = FirebaseDatabase.getInstance();
         DatabaseReference mRef = mDatabase.getReference(uid);
         StorageReference imageReference = mStorageReference.child(uid).child("images").child("Profile Picture");
-        imageReference.putFile(imagePath);
+        if(imagePath == null) {
+            Resources res = getContext().getResources();
+            int resId = R.drawable.banana;
+            Uri uri = Uri.fromFile(new File("android.resource://" +
+                    res.getResourcePackageName(resId) + "/" +
+                    res.getResourceTypeName(resId) + "/" +
+                    res.getResourceEntryName(resId)));
+            imageReference.putFile(uri);
+        } else {
+            imageReference.putFile(imagePath);
+        }
     }
 
     private void sendEmailVerification(){

@@ -46,10 +46,11 @@ public class HomeFragment extends Fragment implements Dialog.AddIngredientDialog
         addIngredientBtn = getActivity().findViewById(R.id.addIngredientBtn);
         mAuth = FirebaseAuth.getInstance();
 
-        //change to login fragment if user not logged in
+        //change to welcome fragment if user not logged in
         if(mAuth.getCurrentUser()==null){
             FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
-            ft.replace(R.id.content_frame, new RegisterFragment());
+            ft.replace(R.id.content_frame, WelcomeFragment.newInstance());
+            ft.addToBackStack("WelcomeFragment");
             ft.commit();
         }
 
