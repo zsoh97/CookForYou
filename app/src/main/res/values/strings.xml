@@ -43,4 +43,6 @@
     <string name="password_hint">Password</string>
     <string name="email_hint">Email</string>
     <string name="register_account_text">Register new account</string>
+    <string name="results_loading_message">Cooking Recipes for You</string>
+    <string name="nothing_found_message">Nothing found :(</string>
 </resources>

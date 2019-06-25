@@ -1,12 +1,15 @@
 package com.example.cookforyou.network;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Message;
 import android.util.Log;
+
+import com.example.cookforyou.R;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
@@ -29,6 +32,7 @@ public class ThumbnailDownloader<T> extends HandlerThread {
     private static final int MESSAGE_DOWNLOAD = 0;
 
     private boolean mHasQuit = false;
+    private Context mContext;
     private Handler mRequestHandler;
     private ConcurrentMap<T, String> mRequestMap = new ConcurrentHashMap<>();
     private Handler mResponseHandler;
@@ -42,8 +46,9 @@ public class ThumbnailDownloader<T> extends HandlerThread {
         mThumbnailDownloadListener = listener;
     }
 
-    public ThumbnailDownloader(Handler responseHandler) {
+    public ThumbnailDownloader(Context context, Handler responseHandler) {
         super(TAG);
+        mContext = context;
         mResponseHandler = responseHandler;
     }
 
@@ -101,9 +106,17 @@ public class ThumbnailDownloader<T> extends HandlerThread {
 
         try {
             byte[] bitmapBytes = new RecipeFetcher().getUrlBytes(url);
-            final Bitmap bitmap = BitmapFactory
-                    .decodeByteArray(bitmapBytes, 0, bitmapBytes.length);
-            Log.i(TAG, "Bitmap created from thumbnail URL");
+            final Bitmap bitmap;
+            if(bitmapBytes == null) {
+                bitmap = BitmapFactory.decodeResource(mContext.getResources(),
+                        R.drawable.image_not_available_image);
+                Log.i(TAG, "Thumbnail URL empty. Placing no image available");
+            } else {
+                bitmap = BitmapFactory
+                        .decodeByteArray(bitmapBytes, 0, bitmapBytes.length);
+
+                Log.i(TAG, "Bitmap created from thumbnail URL");
+            }
 
             mResponseHandler.post(new Runnable() {
                 @Override

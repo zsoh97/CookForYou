@@ -11,6 +11,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.example.cookforyou.model.Recipe;
+import com.google.firebase.firestore.SetOptions;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -70,11 +71,14 @@ public class Database {
      * @param recipe The recipe to add to the database
      * @return A task regarding the add operation being executed.
      */
-    public Task<DocumentReference> addRecipe(Recipe recipe) {
+    public Task<Void> addRecipe(Recipe recipe) {
         List<String> ingredients = recipe.getIngredients();
-        Task<DocumentReference> result = null;
+        Task<Void> result = null;
         for(String ingredient : ingredients) {
-            result = mDatabase.collection(constructIngredientCollectionPath(ingredient)).add(recipe);
+            result = mDatabase
+                    .collection(constructIngredientCollectionPath(ingredient))
+                    .document(recipe.getTitle().trim())
+                    .set(recipe, SetOptions.merge());
         }
         return result;
     }
@@ -87,8 +91,8 @@ public class Database {
      * @param recipes The collection of recipe to add to the database
      * @return A task regarding the add operation being executed.
      */
-    public Task<DocumentReference> addAllRecipe(Collection<Recipe> recipes) {
-        Task<DocumentReference> task = null;
+    public Task<Void> addAllRecipe(Collection<Recipe> recipes) {
+        Task<Void> task = null;
         for(Recipe recipe : recipes) {
             task = addRecipe(recipe);
         }

@@ -43,8 +43,6 @@ public class ResultsAdapter extends RecyclerView.Adapter<ResultsAdapter.ResultsH
     @Override
     public void onBindViewHolder(@NonNull ResultsHolder resultsHolder, int i) {
         Recipe recipe = mRecipeList.get(i);
-        Drawable placeholder = mContext.getResources().getDrawable(R.drawable.banana) ;
-        resultsHolder.bindDrawable(placeholder);
         mThumbnailDownloader.queueThumbnail(resultsHolder, recipe.getThumbnailUrl());
         resultsHolder.bindTitle(recipe.getTitle());
     }

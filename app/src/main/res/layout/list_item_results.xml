@@ -12,6 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:scaleType="centerCrop"
+        android:src="@drawable/ic_loading_image"
         app:layout_constraintBottom_toTopOf="@id/guideline"
         app:layout_constraintLeft_toLeftOf="@id/list_item_results_layout"
         app:layout_constraintRight_toRightOf="@id/list_item_results_layout"

@@ -70,6 +70,7 @@ public class HomeFragment extends Fragment implements Dialog.AddIngredientDialog
                     Fragment resultsFragment = ResultsFragment.newInstance(ingredients);
                     FragmentManager fm = getActivity().getSupportFragmentManager();
                     fm.beginTransaction()
+                            .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
                             .replace(R.id.content_frame, resultsFragment)
                             .addToBackStack("ResultsFragment")
                             .commit();

@@ -28,6 +28,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.example.cookforyou.HomeFragment;
 import com.example.cookforyou.R;
+import com.example.cookforyou.animation.Animations;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -77,6 +78,7 @@ public class LoginFragment extends Fragment  {
             @Override
             public void onClick(View v) {
                 FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
+                ft.setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right, android.R.anim.slide_in_left, android.R.anim.slide_out_right);
                 ft.replace(R.id.content_frame, new ResetPasswordFragment());
                 ft.addToBackStack(null);
                 ft.commit();
@@ -135,7 +137,7 @@ public class LoginFragment extends Fragment  {
     }
 
     private void beginSigninView() {
-        crossfade(mLoginPageLayout, mLoginWaitingPageLayout,
+        Animations.crossfade(mLoginPageLayout, mLoginWaitingPageLayout,
                 getResources().getInteger(android.R.integer.config_shortAnimTime), null);
     }
 
@@ -173,7 +175,7 @@ public class LoginFragment extends Fragment  {
         };
 
         mWelcomeBackText.setText(getString(R.string.welcome_message, mAuth.getCurrentUser().getDisplayName()));
-        crossfade(mLoginWaitingPageLayout,
+        Animations.crossfade(mLoginWaitingPageLayout,
                 mWelcomeBackPageLayout,
                 getResources().getInteger(android.R.integer.config_shortAnimTime),
                 listener);
@@ -182,48 +184,10 @@ public class LoginFragment extends Fragment  {
 
     private void failedSigninView() {
         Toast.makeText(getActivity().getApplicationContext(), "Login Failed. Incorrect username or password", Toast.LENGTH_SHORT).show();
-        crossfade(mLoginWaitingPageLayout, mLoginPageLayout,
+        Animations.crossfade(mLoginWaitingPageLayout, mLoginPageLayout,
                 getResources().getInteger(android.R.integer.config_shortAnimTime),
                 null);
     }
 
-    private void crossfade(final View from, final View to, final int duration,
-                           final Animator.AnimatorListener listener) {
-        to.setAlpha(0f);
-        to.setVisibility(View.VISIBLE);
 
-        to.animate()
-                .alpha(1f)
-                .setDuration(duration)
-                .setListener(null);
-
-        ViewPropertyAnimator animator = from.animate()
-                .alpha(0f)
-                .setDuration(duration);
-        if(listener == null) {
-            animator.setListener(new Animator.AnimatorListener() {
-                @Override
-                public void onAnimationStart(Animator animation) {
-
-                }
-
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    from.setVisibility(View.GONE);
-                }
-
-                @Override
-                public void onAnimationCancel(Animator animation) {
-
-                }
-
-                @Override
-                public void onAnimationRepeat(Animator animation) {
-
-                }
-            });
-        } else {
-            animator.setListener(listener);
-        }
-    }
 }

@@ -123,6 +123,9 @@ public class RecipeFetcher {
      * @throws IOException If connection fails, HTTP response code not 200.
      */
     byte[] getUrlBytes(String urlSpec) throws IOException {
+        if(urlSpec.equals("")) {
+            return null;
+        }
         URL url = new URL(urlSpec);
         //Opens up a HTTP connection
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
