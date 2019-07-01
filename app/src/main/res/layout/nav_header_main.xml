@@ -27,9 +27,4 @@
         android:paddingTop="@dimen/nav_header_vertical_spacing"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
-    <TextView
-        android:id="@+id/displayMatricTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-
 </LinearLayout>

@@ -12,7 +12,7 @@
         android:layout_width="110dp"
         android:layout_height="110dp"
         android:id="@+id/profileImageView"
-        android:src="@mipmap/ic_launcher_round"/>
+        android:src="@drawable/chefhat"/>
 
     <TextView
         android:layout_width="wrap_content"

@@ -1,6 +1,5 @@
 package com.example.cookforyou.auth;
 
-import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -21,7 +20,6 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.bumptech.glide.load.model.ResourceLoader;
 import com.example.cookforyou.HomeFragment;
 import com.example.cookforyou.R;
 import com.example.cookforyou.model.UserDetails;
@@ -37,7 +35,6 @@ import com.google.firebase.storage.StorageReference;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -104,9 +101,11 @@ public class RegisterFragment extends Fragment {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }else{
+            Toast.makeText(getActivity().getApplicationContext(), "No Picture Selected", Toast.LENGTH_SHORT).show();
+            return;
         }
         super.onActivityResult(requestCode, resultCode, data);
-
     }
 
     private void registerNewUser() {

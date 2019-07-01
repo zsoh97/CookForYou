@@ -11,7 +11,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,8 +21,6 @@ import android.widget.TextView;
 import com.example.cookforyou.auth.LoginFragment;
 import com.example.cookforyou.auth.ProfileFragment;
 import com.example.cookforyou.auth.RegisterFragment;
-import com.example.cookforyou.database.Database;
-import com.example.cookforyou.model.Recipe;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -35,7 +32,6 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -99,7 +95,6 @@ public class MainActivity extends AppCompatActivity
                     navMenuLogIn.findItem(R.id.nav_update_profile).setVisible(true);
 
                     final TextView displayName =headerView.findViewById(R.id.displayNameTextView);
-                    final TextView displayMatric = headerView.findViewById(R.id.displayMatricTextView);
                     final ImageView profilePic = headerView.findViewById(R.id.profileImageView);
 
                     String userID = mAuth.getCurrentUser().getUid();
@@ -108,9 +103,7 @@ public class MainActivity extends AppCompatActivity
                         @Override
                         public void onSuccess(DocumentSnapshot documentSnapshot) {
                             String name = documentSnapshot.getString("Name");
-                            String matricNum = documentSnapshot.getString("MatriculationNumber");
                             displayName.setText(name);
-                            displayMatric.setText(matricNum);
                         }
                     });
 

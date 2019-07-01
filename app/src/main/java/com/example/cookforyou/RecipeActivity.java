@@ -2,8 +2,8 @@ package com.example.cookforyou;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.webkit.WebChromeClient;
 import android.webkit.WebView;
-import android.webkit.WebViewClient;
 
 public class RecipeActivity extends AppCompatActivity {
 
@@ -26,13 +26,14 @@ public class RecipeActivity extends AppCompatActivity {
         String recipeUrl = (String) extras.get("recipeLink");
         webView = findViewById(R.id.webViewActivity);
         webView.getSettings().setJavaScriptEnabled(true);
-        webView.setWebViewClient(new WebViewClient(){
-            @Override
-            public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                view.loadUrl(url);
-                return true;
-            }
-        });
+        webView.setWebChromeClient(new WebChromeClient());
+//        webView.setWebViewClient(new WebViewClient(){
+//            @Override
+//            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+//                view.loadUrl(url);
+//                return true;
+//            }
+//        });
         webView.loadUrl(recipeUrl);
     }
 }
