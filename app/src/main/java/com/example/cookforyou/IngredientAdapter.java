@@ -20,7 +20,6 @@ public class IngredientAdapter extends RecyclerView.Adapter<IngredientAdapter.In
     protected List<Ingredient> checkedIngredients = new ArrayList<>();
 
     public static class IngredientViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
-
         TextView textView;
         CheckBox checkBox;
         ItemClickListener itemClickListener;
@@ -28,6 +27,8 @@ public class IngredientAdapter extends RecyclerView.Adapter<IngredientAdapter.In
         public IngredientViewHolder(@NonNull View itemView) {
             super(itemView);
             textView = itemView.findViewById(R.id.textView);
+//            viewBackground = itemView.findViewById(R.id.view_background);
+//            viewForeground = itemView.findViewById(R.id.viewForeground);
             checkBox = itemView.findViewById(R.id.checkbox);
             checkBox.setOnClickListener(this);
         }
@@ -85,6 +86,22 @@ public class IngredientAdapter extends RecyclerView.Adapter<IngredientAdapter.In
         ingredientListFull.add(ing);
         Collections.sort(ingredientListFull);
         notifyDataSetChanged();
+    }
+
+    protected void removeIngredient(String ingredient){
+        int position = 0;
+        for(int i = 0; i<ingredientList.size(); i++){
+            if(ingredientList.get(i).getmText().equals(ingredient)){
+                ingredientList.remove(i);
+                position = i;
+            }
+        }
+        for(Ingredient i : ingredientListFull) {
+            if (i.getmText().equals(ingredient)) {
+                ingredientListFull.remove(i);
+            }
+        }
+        notifyItemRemoved(position);
     }
 
     @Override

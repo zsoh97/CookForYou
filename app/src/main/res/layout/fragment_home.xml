@@ -18,23 +18,34 @@
 
     <Button
         android:id="@+id/addIngredientBtn"
-        android:layout_width="200dp"
-        android:layout_height="50dp"
+        android:layout_width="160dp"
+        android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_alignParentBottom="true"
         android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
+        android:layout_marginRight="5dp"
         android:background="#EE744D"
         android:text="Add Ingredient"
-        android:textColor="#FFFF"/>
+        android:textColor="#FFFF" />
+
+    <ImageButton
+        android:id="@+id/removeBtn"
+        android:layout_width="59dp"
+        android:layout_height="48dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_toEndOf="@+id/queryBtn"
+        android:background="#EE744D"
+        android:src="@drawable/ic_delete_white_24dp" />
 
     <Button
         android:id="@+id/queryBtn"
-        android:layout_width="220dp"
+        android:layout_width="160dp"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
         android:layout_toEndOf="@id/addIngredientBtn"
         android:background="#EE744D"
         android:text="Feed Me"

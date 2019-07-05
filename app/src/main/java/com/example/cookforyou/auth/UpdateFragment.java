@@ -36,7 +36,6 @@ public class UpdateFragment extends Fragment {
 
     private ImageView profilePic;
     private EditText newName;
-    private EditText newMatric;
     private Button saveBtn;
 
     private FirebaseAuth mAuth;
@@ -44,13 +43,12 @@ public class UpdateFragment extends Fragment {
     private FirebaseDatabase mDatabase;
     private FirebaseFirestore db;
     private StorageReference mStorageReference;
-    private String name, matric, uid;
+    private String name, uid;
     private static int PICK_IMAGE = 1234;
     Uri imagePath;
 
     public static final String userDetailsKey = "UserDetails";
     public static final String nameKey = "Name";
-    public static final String matriculationNumberKey = "MatriculationNumber";
     private boolean profileChanged = false;
 
     public UpdateFragment() {
@@ -64,7 +62,6 @@ public class UpdateFragment extends Fragment {
 
         profilePic = getActivity().findViewById(R.id.updateImageView);
         newName = getActivity().findViewById(R.id.updateNameEditText);
-        newMatric = getActivity().findViewById(R.id.updateMatricEditText);
         saveBtn = getActivity().findViewById(R.id.saveBtn);
 
         mAuth = FirebaseAuth.getInstance();
@@ -116,21 +113,14 @@ public class UpdateFragment extends Fragment {
     public void updateDetails(){
 
         name = newName.getText().toString();
-        matric = newMatric.getText().toString();
-
         if (name.isEmpty()) {
             Toast.makeText(getActivity().getApplicationContext(), "Please enter new Name...", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        if (matric.isEmpty()) {
-            Toast.makeText(getActivity().getApplicationContext(), "Please enter new Matriculation Number!", Toast.LENGTH_SHORT).show();
             return;
         }
 
         Map<String,Object> data = new HashMap<>();
 
         data.put(nameKey,name);
-        data.put(matriculationNumberKey,matric);
 
         db.collection(userDetailsKey).document(uid).update(data);
 
