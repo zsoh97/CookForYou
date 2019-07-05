@@ -194,10 +194,10 @@ public class HomeFragment extends Fragment implements Dialog.AddIngredientDialog
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 ingredientString = (ArrayList<String>) documentSnapshot.get("Ingredients");
-//                Collections.sort(ingredientString);
                 for(String s : ingredientString){
                     ingredientList.add(new Ingredient(s));
                 }
+                mAdapter.notifyDataSetChanged();
             }
         });
     }
