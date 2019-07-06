@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:title="@string/sort_item_title"
+        app:showAsAction="never"
+        android:id="@+id/sort_by">
+
+        <menu>
+            <item
+                android:id="@+id/sort_by_query"
+                android:title="@string/query_item_title"/>
+            <item
+                android:id="@+id/sort_by_visits"
+                android:title="@string/most_popular_item_title"/>
+        </menu>
+    </item>
+</menu>

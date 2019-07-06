@@ -45,4 +45,7 @@
     <string name="register_account_text">Register new account</string>
     <string name="results_loading_message">Cooking Recipes for You</string>
     <string name="nothing_found_message">Nothing found :(</string>
+    <string name="sort_item_title">Sort</string>
+    <string name="query_item_title">Ingredients</string>
+    <string name="most_popular_item_title">Most Popular</string>
 </resources>

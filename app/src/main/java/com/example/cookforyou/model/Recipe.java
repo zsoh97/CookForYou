@@ -25,6 +25,7 @@ public class Recipe {
     private String mRecipeUrl;
     private List<String> mIngredients;
     private String mThumbnailUrl;
+    private int mVisits;
 
     public Recipe() {
 
@@ -66,6 +67,14 @@ public class Recipe {
         return mId;
     }
 
+    public int getVisits() { return mVisits; }
+
+    public void setVisits(int visits) { mVisits = visits; }
+
+    public void incrementVisits() { mVisits++; }
+
+    public void incrementVisits(int by) { mVisits += by; }
+
     /**
      * Sets a unique ID for each recipe object.
      *
@@ -90,7 +99,8 @@ public class Recipe {
     public String toString() {
         return "Recipe: " + mTitle
                 + ", URL: " + mRecipeUrl
-                + ", Ingredients: " + mIngredients.toString();
+                + ", Ingredients: " + mIngredients.toString()
+                + ", Num Of Visits: " + mVisits;
     }
 
     @Override

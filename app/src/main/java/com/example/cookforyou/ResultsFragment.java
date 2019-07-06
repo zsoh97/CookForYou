@@ -18,6 +18,9 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
@@ -25,6 +28,7 @@ import android.widget.TextView;
 
 import com.example.cookforyou.animation.Animations;
 import com.example.cookforyou.database.Database;
+import com.example.cookforyou.database.Ranker;
 import com.example.cookforyou.model.Recipe;
 import com.example.cookforyou.network.RecipeFetcher;
 import com.example.cookforyou.network.ThumbnailDownloader;
@@ -40,12 +44,13 @@ import static com.example.cookforyou.database.Database.getInstance;
 
 public class ResultsFragment extends Fragment implements ResultsAdapter.OnRecipeClickListener {
     private static final String TAG = "ResultsFragment";
-
     private static final String QUERY_KEY = "ingredientQuery";
 
     private RecyclerView mRecyclerView;
     private List<Recipe> mRecipeList = new ArrayList<>();
+    private List<String> mQuery;
     private Group mLoadingGroup, mRecyclerGroup, mFailGroup;
+    private ResultsAdapter mResultsAdapter;
     public static ThumbnailDownloader<ResultsAdapter.ResultsHolder> mThumbnailDownloader;
 
 
@@ -61,7 +66,9 @@ public class ResultsFragment extends Fragment implements ResultsAdapter.OnRecipe
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
         String[] ingredients = getArguments().getStringArray(QUERY_KEY);
+        mQuery = Arrays.asList(ingredients);
         Log.i(TAG, "Queried ingredients: " + Arrays.toString(ingredients));
         new FetchRecipeTask().execute(ingredients);
 
@@ -109,6 +116,30 @@ public class ResultsFragment extends Fragment implements ResultsAdapter.OnRecipe
     }
 
     @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.menu_results, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId()) {
+            case R.id.sort_by_query :
+                Ranker.rankOnQuery(mRecipeList, mQuery, Ranker.DESCENDING);
+                Log.i(TAG, "Sorting by query: " + mRecipeList.toString());
+                mResultsAdapter.notifyDataSetChanged();
+                return true;
+            case R.id.sort_by_visits :
+                Ranker.rankOnVisits(mRecipeList, Ranker.DESCENDING);
+                Log.i(TAG, "Sorting by visits: " + mRecipeList.toString());
+                mResultsAdapter.notifyDataSetChanged();
+                return true;
+            default :
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
         mThumbnailDownloader.clearQueue();
@@ -123,7 +154,8 @@ public class ResultsFragment extends Fragment implements ResultsAdapter.OnRecipe
 
     private void setupAdapter() {
         if(isAdded()) {
-            mRecyclerView.setAdapter(new ResultsAdapter(mRecipeList, getContext(), this));
+            mResultsAdapter = new ResultsAdapter(mRecipeList, getContext(), this);
+            mRecyclerView.setAdapter(mResultsAdapter);
         }
     }
 
@@ -191,6 +223,8 @@ public class ResultsFragment extends Fragment implements ResultsAdapter.OnRecipe
 
     public void onRecipeClick(int position){
         Recipe selectedRecipe = mRecipeList.get(position);
+        selectedRecipe.incrementVisits();
+        Database.getInstance().addRecipe(selectedRecipe);
         String recipeUrl = selectedRecipe.getRecipeUrl();
         Intent intent = new Intent(getActivity(), RecipeActivity.class);
         intent.putExtra("recipeLink", recipeUrl);

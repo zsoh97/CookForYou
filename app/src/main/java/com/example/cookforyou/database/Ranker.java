@@ -33,11 +33,11 @@ public class Ranker {
      * </p>
      * @param results The results list
      * @param queries The querying list
-     * @param options Specifies ascending or descending order.
+     * @param option Specifies ascending or descending order.
      */
     public static void rankOnQuery(final List<Recipe> results,
                             final List<String> queries,
-                            final int options) {
+                            final int option) {
         final HashSet<String> setQuery = new HashSet<>();
         setQuery.addAll(queries);
         Collections.sort(results, new Comparator<Recipe>() {
@@ -49,9 +49,39 @@ public class Ranker {
                 if(diff == 0) {
                     return o1.getIngredients().size() - o2.getIngredients().size();
                 }
-                if(options == ASCENDING) {
+                if(option == ASCENDING) {
                     return diff;
-                } else if(options == DESCENDING) {
+                } else if(option == DESCENDING) {
+                    return -diff;
+                } else {
+                    throw new IllegalArgumentException("Option passed into ranker not recognized.");
+                }
+            }
+        });
+    }
+
+    /**
+     * Ranks results based on the number of visits to the recipe link.
+     *
+     * <p>
+     *     This method ranks a list of results based on how many visits the
+     *     url has had since the dawn of time.
+     *     You are allowed to specify the direction
+     *     of the order using the static variables declared in this class.
+     *     If there is a tie between number of matches, the in-place order
+     *     is used.
+     * </p>
+     * @param results The results list
+     * @param option Specifies ascending or descending order.
+     */
+    public static void rankOnVisits(final List<Recipe> results, final int option) {
+        Collections.sort(results, new Comparator<Recipe>() {
+            @Override
+            public int compare(Recipe o1, Recipe o2) {
+                int diff = o1.getVisits() - o2.getVisits();
+                if(option == ASCENDING) {
+                    return diff;
+                } else if(option == DESCENDING) {
                     return -diff;
                 } else {
                     throw new IllegalArgumentException("Option passed into ranker not recognized.");

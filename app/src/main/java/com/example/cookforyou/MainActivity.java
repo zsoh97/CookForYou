@@ -41,7 +41,6 @@ public class MainActivity extends AppCompatActivity
     private FirebaseAuth mAuth;
     private FirebaseStorage mStorage;
     private FirebaseFirestore db;
-    private ArrayAdapter<String> adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,7 +78,7 @@ public class MainActivity extends AppCompatActivity
         db = FirebaseFirestore.getInstance();
         ArrayList<String> arrayIngredients = new ArrayList<>();
         arrayIngredients.addAll(Arrays.asList(getResources().getStringArray(R.array.array_ingredients)));
-        adapter = new ArrayAdapter<>(MainActivity.this, android.R.layout.simple_list_item_1, arrayIngredients);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(MainActivity.this, android.R.layout.simple_list_item_1, arrayIngredients);
         // add auth change listener
         mAuth.addAuthStateListener(new FirebaseAuth.AuthStateListener() {
             @Override
