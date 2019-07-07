@@ -10,9 +10,9 @@ import android.os.Message;
 import android.util.Log;
 
 import com.example.cookforyou.R;
+import com.example.cookforyou.ResultsAdapter;
 
 import java.io.IOException;
-import java.lang.ref.WeakReference;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -40,6 +40,8 @@ public class ThumbnailDownloader<T> extends HandlerThread {
 
     public interface ThumbnailDownloadListener<T> {
         void onThumbnailDownloaded(T target, Bitmap thumbnail);
+
+        void onThumbnailDownloaded(ResultsAdapter.ResultsHolder target, Bitmap thumbnail);
     }
 
     public void setThumbnailDownloadListener(ThumbnailDownloadListener<T> listener) {

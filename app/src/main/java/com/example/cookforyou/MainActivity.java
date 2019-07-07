@@ -92,6 +92,7 @@ public class MainActivity extends AppCompatActivity
                     navMenuLogIn.findItem(R.id.nav_register).setVisible(false);
                     navMenuLogIn.findItem(R.id.nav_logout).setVisible(true);
                     navMenuLogIn.findItem(R.id.nav_update_profile).setVisible(true);
+                    navMenuLogIn.findItem(R.id.nav_favourite).setVisible(true);
 
                     final TextView displayName =headerView.findViewById(R.id.displayNameTextView);
                     final ImageView profilePic = headerView.findViewById(R.id.profileImageView);
@@ -120,6 +121,7 @@ public class MainActivity extends AppCompatActivity
                     navMenuLogIn.findItem(R.id.nav_register).setVisible(true);
                     navMenuLogIn.findItem(R.id.nav_logout).setVisible(false);
                     navMenuLogIn.findItem(R.id.nav_update_profile).setVisible(false);
+                    navMenuLogIn.findItem(R.id.nav_favourite).setVisible(false);
                 }
             }
         });
@@ -185,8 +187,10 @@ public class MainActivity extends AppCompatActivity
             FirebaseAuth.getInstance().signOut();
             fragment = new HomeFragment();
 
-        }else if (id == R.id.nav_update_profile){
+        } else if (id == R.id.nav_update_profile){
             fragment = new ProfileFragment();
+        } else if (id == R.id.nav_favourite){
+            fragment = new FavouriteFragment();
         }
 
         //replacing the fragment

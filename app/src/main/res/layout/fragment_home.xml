@@ -30,7 +30,7 @@
 
     <ImageButton
         android:id="@+id/removeBtn"
-        android:layout_width="59dp"
+        android:layout_width="66dp"
         android:layout_height="48dp"
         android:layout_alignParentBottom="true"
         android:layout_marginLeft="5dp"
@@ -41,7 +41,7 @@
 
     <Button
         android:id="@+id/queryBtn"
-        android:layout_width="160dp"
+        android:layout_width="140dp"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_marginLeft="5dp"

@@ -26,6 +26,7 @@ import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class HomeFragment extends Fragment implements Dialog.AddIngredientDialogListener {
@@ -63,8 +64,8 @@ public class HomeFragment extends Fragment implements Dialog.AddIngredientDialog
             //Get unique uid for each user
             uid = mAuth.getCurrentUser().getUid();
             //Getting of array of ingredients stored under uid
-            populateLists();
             buildRecyclerView();
+            populateLists();
 
             queryBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -143,7 +144,7 @@ public class HomeFragment extends Fragment implements Dialog.AddIngredientDialog
         mRecyclerView = getActivity().findViewById(R.id.recyclerView);
         mRecyclerView.setHasFixedSize(true);
         mLayoutManager = new LinearLayoutManager(getActivity().getApplicationContext());
-        mAdapter = new IngredientAdapter(ingredientList);
+        mAdapter = new IngredientAdapter(ingredientList, getContext());
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setAdapter(mAdapter);
     }
@@ -169,6 +170,7 @@ public class HomeFragment extends Fragment implements Dialog.AddIngredientDialog
             @Override
             public boolean onQueryTextChange(String newText) {
                 mAdapter.getFilter().filter(newText);
+                mAdapter.notifyDataSetChanged();
                 return false;
             }
         });
@@ -194,6 +196,7 @@ public class HomeFragment extends Fragment implements Dialog.AddIngredientDialog
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 ingredientString = (ArrayList<String>) documentSnapshot.get("Ingredients");
+                Collections.sort(ingredientString);
                 for(String s : ingredientString){
                     ingredientList.add(new Ingredient(s));
                 }

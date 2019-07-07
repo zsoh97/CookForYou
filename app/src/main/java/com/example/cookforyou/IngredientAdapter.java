@@ -1,5 +1,6 @@
 package com.example.cookforyou;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -16,6 +17,7 @@ import java.util.List;
 
 public class IngredientAdapter extends RecyclerView.Adapter<IngredientAdapter.IngredientViewHolder> implements Filterable {
     private List<Ingredient> ingredientList;
+    private Context mContext;
     private List<Ingredient> ingredientListFull;
     protected List<Ingredient> checkedIngredients = new ArrayList<>();
 
@@ -27,8 +29,6 @@ public class IngredientAdapter extends RecyclerView.Adapter<IngredientAdapter.In
         public IngredientViewHolder(@NonNull View itemView) {
             super(itemView);
             textView = itemView.findViewById(R.id.textView);
-//            viewBackground = itemView.findViewById(R.id.view_background);
-//            viewForeground = itemView.findViewById(R.id.viewForeground);
             checkBox = itemView.findViewById(R.id.checkbox);
             checkBox.setOnClickListener(this);
         }
@@ -46,7 +46,8 @@ public class IngredientAdapter extends RecyclerView.Adapter<IngredientAdapter.In
         }
     }
 
-    public IngredientAdapter(List<Ingredient> ingredients){
+    public IngredientAdapter(List<Ingredient> ingredients, Context context){
+        this.mContext = context;
         this.ingredientList = ingredients;
         this.ingredientListFull = new ArrayList<>(ingredientList);
     }
@@ -139,7 +140,7 @@ public class IngredientAdapter extends RecyclerView.Adapter<IngredientAdapter.In
         @Override
         protected void publishResults(CharSequence constraint, FilterResults results) {
             ingredientList.clear();
-            ingredientList.addAll((List)results.values);
+            ingredientList.addAll((List<Ingredient>)results.values);
             notifyDataSetChanged();
         }
     };

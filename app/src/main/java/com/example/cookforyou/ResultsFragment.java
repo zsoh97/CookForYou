@@ -1,6 +1,5 @@
 package com.example.cookforyou;
 
-import android.animation.Animator;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -10,7 +9,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.constraint.ConstraintLayout;
 import android.support.constraint.Group;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DividerItemDecoration;
@@ -23,10 +21,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 
-import com.example.cookforyou.animation.Animations;
 import com.example.cookforyou.database.Database;
 import com.example.cookforyou.database.Ranker;
 import com.example.cookforyou.model.Recipe;
@@ -34,7 +29,6 @@ import com.example.cookforyou.network.RecipeFetcher;
 import com.example.cookforyou.network.ThumbnailDownloader;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.DocumentReference;
 
 import java.util.ArrayList;
 import java.util.Arrays;
