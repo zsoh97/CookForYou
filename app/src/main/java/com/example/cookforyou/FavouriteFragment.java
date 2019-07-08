@@ -61,6 +61,8 @@ public class FavouriteFragment extends Fragment implements FavouriteAdapter.OnRe
                 for(DocumentSnapshot snapshot: snapshots){
                     mRecipeList.add(snapshot.toObject(Recipe.class));
                 }
+                mFavouriteAdapter.notifyDataSetChanged();
+                completeLoadingScreen();
             }
         });
         setupAdapter();
@@ -79,7 +81,6 @@ public class FavouriteFragment extends Fragment implements FavouriteAdapter.OnRe
         mFavThumbnailDownloader.getLooper();
         Log.i(TAG, "Background thread for thumbnail download started");
         setupAdapter();
-        completeLoadingScreen();
     }
 
     @Nullable
