@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/favourite"
+    android:layout_width="match_parent"
+    android:padding="8dp"
+    android:background="@android:color/darker_gray"
+    android:layout_height="350dp">
+
+    <ImageView
+        android:id="@+id/item_image_view_fav"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/ic_loading_image"
+        app:layout_constraintBottom_toTopOf="@id/guidelineFav"
+        app:layout_constraintLeft_toLeftOf="@id/favourite"
+        app:layout_constraintRight_toRightOf="@id/favourite"
+        app:layout_constraintTop_toTopOf="@id/favourite" />
+
+    <TextView
+        android:id="@+id/item_text_view_fav"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="8dp"
+        android:paddingBottom="8dp"
+        android:textAlignment="textStart"
+        android:textAppearance="@style/TextAppearance.AppCompat.Title"
+        android:textColor="@android:color/black"
+        app:layout_constraintBottom_toBottomOf="@id/favourite"
+        app:layout_constraintLeft_toLeftOf="@id/favourite"
+        app:layout_constraintTop_toBottomOf="@+id/favIcon" />
+
+    <ImageView
+        android:id="@+id/favIcon"
+        android:layout_width="29dp"
+        android:layout_height="31dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="8dp"
+        android:paddingBottom="8dp"
+        android:src="@drawable/ic_favorite_red_24dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/guidelineFav" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guidelineFav"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.7" />
+
+
+
+</android.support.constraint.ConstraintLayout>
