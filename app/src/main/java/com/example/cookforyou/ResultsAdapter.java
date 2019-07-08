@@ -45,11 +45,25 @@ public class ResultsAdapter extends RecyclerView.Adapter<ResultsAdapter.ResultsH
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                 List<DocumentSnapshot> snapshots = queryDocumentSnapshots.getDocuments();
+                List<String> temp = new ArrayList<>();
                 for(DocumentSnapshot snapshot: snapshots){
-                    userFavId.add(snapshot.getId());
+                    temp.add(snapshot.getId());
                 }
+                userFavId = new ArrayList<>(temp);
             }
         });
+    }
+
+    public void addToFavourites(Recipe recipe){
+        Map<String, Object> data = new HashMap<>();
+        data.put("id", recipe.getId());
+        data.put("ingredients", recipe.getIngredients());
+        data.put("recipeUrl", recipe.getRecipeUrl());
+        data.put("thumbnailUrl", recipe.getThumbnailUrl());
+        data.put("title", recipe.getTitle());
+        db.collection("UserDetails").document(uid).collection("favourites").document(recipe.getId()).set(data);
+        notifyDataSetChanged();
+        Toast.makeText(mContext, "Recipe Added to Favourites", Toast.LENGTH_SHORT).show();
     }
 
     @NonNull
@@ -66,36 +80,30 @@ public class ResultsAdapter extends RecyclerView.Adapter<ResultsAdapter.ResultsH
     }
 
     @Override
-    public void onBindViewHolder(final @NonNull ResultsHolder resultsHolder, int i) {
+    public void onBindViewHolder(@NonNull ResultsHolder resultsHolder, int i) {
         final Recipe recipe = mRecipeList.get(i);
-        if(userFavId.contains(recipe.getId())){
-            resultsHolder.mFav.setImageResource(R.drawable.ic_favorite_red_24dp);
-        }
         mThumbnailDownloader.queueThumbnail(resultsHolder, recipe.getThumbnailUrl());
         resultsHolder.bindTitle(recipe.getTitle());
+        if(!userFavId.contains(recipe.getId())){
+            resultsHolder.mFav.setImageResource(R.drawable.ic_favorite_red_24dp);
+        }
         resultsHolder.mFav.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                ImageView imageView = (ImageView) v;
                 if(!userFavId.contains(recipe.getId())){
-                    Map<String, Object> data = new HashMap<>();
-                    data.put("id", recipe.getId());
-                    data.put("ingredients", recipe.getIngredients());
-                    data.put("recipeUrl", recipe.getRecipeUrl());
-                    data.put("thumbnailUrl", recipe.getThumbnailUrl());
-                    data.put("title", recipe.getTitle());
-                    db.collection("UserDetails").document(uid).collection("favourites").document(recipe.getId()).set(data);
-                    resultsHolder.mFav.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_favorite_red_24dp));
-                    notifyDataSetChanged();
-                    Toast.makeText(mContext, "Recipe Added to Favourites", Toast.LENGTH_SHORT).show();
+                    imageView.setImageResource(R.drawable.ic_favorite_red_24dp);
+                    addToFavourites(recipe);
+                    userFavId.add(recipe.getId());
                 }else{
                     db.collection("UserDetails").document(uid).collection("favourites").document(recipe.getId()).delete();
-                    resultsHolder.mFav.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_favorite_border_white_24dp));
+                    imageView.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_favorite_border_white_24dp));
                     notifyDataSetChanged();
                     Toast.makeText(mContext, "Recipe removed from Favourites", Toast.LENGTH_SHORT).show();
+                    userFavId.remove(recipe.getId());
                 }
             }
-        });;
-
+        });
     }
 
     @Override
@@ -117,7 +125,7 @@ public class ResultsAdapter extends RecyclerView.Adapter<ResultsAdapter.ResultsH
             mItemTextView = itemView.findViewById(R.id.item_text_view);
             mFav = itemView.findViewById(R.id.fav);
             onRecipeClickListener = onRecipClickListener;
-            itemView.setOnClickListener(this);
+            mItemImageView.setOnClickListener(this);
 
         }
 
