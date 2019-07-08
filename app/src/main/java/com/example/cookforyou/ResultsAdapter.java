@@ -94,13 +94,13 @@ public class ResultsAdapter extends RecyclerView.Adapter<ResultsAdapter.ResultsH
                 if(!userFavId.contains(recipe.getId())){
                     imageView.setImageResource(R.drawable.ic_favorite_red_24dp);
                     addToFavourites(recipe);
-                    userFavId.add(recipe.getId());
+//                    userFavId.add(recipe.getId());
                 }else{
                     db.collection("UserDetails").document(uid).collection("favourites").document(recipe.getId()).delete();
                     imageView.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_favorite_border_white_24dp));
                     notifyDataSetChanged();
                     Toast.makeText(mContext, "Recipe removed from Favourites", Toast.LENGTH_SHORT).show();
-                    userFavId.remove(recipe.getId());
+//                    userFavId.remove(recipe.getId());
                 }
             }
         });

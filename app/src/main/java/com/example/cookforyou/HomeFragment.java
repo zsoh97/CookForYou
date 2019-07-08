@@ -57,16 +57,15 @@ public class HomeFragment extends Fragment implements Dialog.AddIngredientDialog
         removeBtn = getActivity().findViewById(R.id.removeBtn);
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
-        ingredientList = new ArrayList<>();
-        ingredientString = new ArrayList<>();
         //change to welcome fragment if user not logged in
         if(mAuth.getCurrentUser()!=null) {
+            ingredientList = new ArrayList<>();
+            ingredientString = new ArrayList<>();
             //Get unique uid for each user
             uid = mAuth.getCurrentUser().getUid();
             //Getting of array of ingredients stored under uid
             buildRecyclerView();
             populateLists();
-
             queryBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -117,7 +116,7 @@ public class HomeFragment extends Fragment implements Dialog.AddIngredientDialog
                         Ingredient ing = toDelete.get(toDelete.size()-1);
                         String ingredientName = ing.getmText();
                         deleteIngredient(ingredientName);
-                        sb.append(ingredientName + ", ");
+                        sb.append(ingredientName);
                         ingredientString.remove(ing);
                         for(Ingredient i : ingredientList){
                             if( i.getmText().equals(ing)){
