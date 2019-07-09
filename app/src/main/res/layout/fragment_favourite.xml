@@ -36,7 +36,7 @@
         style="?android:attr/textAppearanceLarge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/favourites_loading_text"
+        android:text="@string/favourites_loading"
         android:textStyle="bold"
         android:padding="8dp"
         app:layout_constraintBottom_toBottomOf="parent"

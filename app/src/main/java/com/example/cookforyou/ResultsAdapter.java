@@ -12,13 +12,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.cookforyou.model.Recipe;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QuerySnapshot;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,30 +24,19 @@ import static com.example.cookforyou.ResultsFragment.mThumbnailDownloader;
 public class ResultsAdapter extends RecyclerView.Adapter<ResultsAdapter.ResultsHolder> {
 
     private List<Recipe> mRecipeList;
-    private Context mContext;
     private OnRecipeClickListener mOnRecipeClickListener;
-    private List<String> userFavId = new ArrayList<>();
+    private List<String> userFavId;
+    private Context mContext;
     private String uid;
     private FirebaseFirestore db;
 
-    public ResultsAdapter(List<Recipe> recipeList, Context context, OnRecipeClickListener onRecipeClickListener){
+    public ResultsAdapter(List<Recipe> recipeList, List<String> favIds, Context context, OnRecipeClickListener onRecipeClickListener){
         mRecipeList = recipeList;
-        mContext = context;
         mOnRecipeClickListener = onRecipeClickListener;
+        userFavId = favIds;
+        mContext = context;
         uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         db = FirebaseFirestore.getInstance();
-        db.collection("UserDetails").document(uid).collection("favourites")
-                .get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-            @Override
-            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                List<DocumentSnapshot> snapshots = queryDocumentSnapshots.getDocuments();
-                List<String> temp = new ArrayList<>();
-                for(DocumentSnapshot snapshot: snapshots){
-                    temp.add(snapshot.getId());
-                }
-                userFavId = new ArrayList<>(temp);
-            }
-        });
     }
 
     public void addToFavourites(Recipe recipe){
@@ -62,7 +47,6 @@ public class ResultsAdapter extends RecyclerView.Adapter<ResultsAdapter.ResultsH
         data.put("thumbnailUrl", recipe.getThumbnailUrl());
         data.put("title", recipe.getTitle());
         db.collection("UserDetails").document(uid).collection("favourites").document(recipe.getId()).set(data);
-        notifyDataSetChanged();
         Toast.makeText(mContext, "Recipe Added to Favourites", Toast.LENGTH_SHORT).show();
     }
 
@@ -84,7 +68,7 @@ public class ResultsAdapter extends RecyclerView.Adapter<ResultsAdapter.ResultsH
         final Recipe recipe = mRecipeList.get(i);
         mThumbnailDownloader.queueThumbnail(resultsHolder, recipe.getThumbnailUrl());
         resultsHolder.bindTitle(recipe.getTitle());
-        if(!userFavId.contains(recipe.getId())){
+        if(userFavId.contains(recipe.getId())){
             resultsHolder.mFav.setImageResource(R.drawable.ic_favorite_red_24dp);
         }
         resultsHolder.mFav.setOnClickListener(new View.OnClickListener() {
@@ -94,13 +78,14 @@ public class ResultsAdapter extends RecyclerView.Adapter<ResultsAdapter.ResultsH
                 if(!userFavId.contains(recipe.getId())){
                     imageView.setImageResource(R.drawable.ic_favorite_red_24dp);
                     addToFavourites(recipe);
-//                    userFavId.add(recipe.getId());
+                    userFavId.add(recipe.getId());
+                    notifyDataSetChanged();
                 }else{
                     db.collection("UserDetails").document(uid).collection("favourites").document(recipe.getId()).delete();
                     imageView.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_favorite_border_white_24dp));
                     notifyDataSetChanged();
                     Toast.makeText(mContext, "Recipe removed from Favourites", Toast.LENGTH_SHORT).show();
-//                    userFavId.remove(recipe.getId());
+                    userFavId.remove(recipe.getId());
                 }
             }
         });
@@ -131,6 +116,7 @@ public class ResultsAdapter extends RecyclerView.Adapter<ResultsAdapter.ResultsH
 
         public void bindDrawable(Drawable drawable) {
             mItemImageView.setImageDrawable(drawable);
+
         }
 
         public void bindTitle(String title) {

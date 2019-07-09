@@ -37,6 +37,7 @@ public class FavouriteFragment extends Fragment implements FavouriteAdapter.OnRe
 
     private RecyclerView mRecyclerView;
     private List<Recipe> mRecipeList = new ArrayList<>();
+    private List<String> favIds = new ArrayList<>();
     private Group mLoadingGroup, mRecyclerGroup, mFailGroup;
     private FavouriteAdapter mFavouriteAdapter;
     private FirebaseAuth mAuth;
@@ -59,7 +60,9 @@ public class FavouriteFragment extends Fragment implements FavouriteAdapter.OnRe
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                 List<DocumentSnapshot> snapshots = queryDocumentSnapshots.getDocuments();
                 for(DocumentSnapshot snapshot: snapshots){
-                    mRecipeList.add(snapshot.toObject(Recipe.class));
+                    Recipe recipe = snapshot.toObject(Recipe.class);
+                    mRecipeList.add(recipe);
+                    favIds.add(recipe.getId());
                 }
                 mFavouriteAdapter.notifyDataSetChanged();
                 if(mRecipeList.isEmpty()) {
@@ -130,7 +133,7 @@ public class FavouriteFragment extends Fragment implements FavouriteAdapter.OnRe
 
     private void setupAdapter() {
         if(isAdded()) {
-            mFavouriteAdapter = new FavouriteAdapter(mRecipeList, getContext(), this);
+            mFavouriteAdapter = new FavouriteAdapter(mRecipeList, favIds, getContext(), this);
             mRecyclerView.setAdapter(mFavouriteAdapter);
         }
     }

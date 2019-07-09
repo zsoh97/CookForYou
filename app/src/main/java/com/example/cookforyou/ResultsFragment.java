@@ -28,7 +28,12 @@ import com.example.cookforyou.model.Recipe;
 import com.example.cookforyou.network.RecipeFetcher;
 import com.example.cookforyou.network.ThumbnailDownloader;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -42,6 +47,9 @@ public class ResultsFragment extends Fragment implements ResultsAdapter.OnRecipe
 
     private RecyclerView mRecyclerView;
     private List<Recipe> mRecipeList = new ArrayList<>();
+    private List<String> favIds = new ArrayList<>();
+    private String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private List<String> mQuery;
     private Group mLoadingGroup, mRecyclerGroup, mFailGroup;
     private ResultsAdapter mResultsAdapter;
@@ -148,7 +156,7 @@ public class ResultsFragment extends Fragment implements ResultsAdapter.OnRecipe
 
     private void setupAdapter() {
         if(isAdded()) {
-            mResultsAdapter = new ResultsAdapter(mRecipeList, getContext(), this);
+            mResultsAdapter = new ResultsAdapter(mRecipeList, favIds, getContext(), this);
             mRecyclerView.setAdapter(mResultsAdapter);
         }
     }
@@ -160,6 +168,18 @@ public class ResultsFragment extends Fragment implements ResultsAdapter.OnRecipe
         @Override
         protected Database doInBackground(String... strings) {
             ingredients = strings;
+            db.collection("UserDetails").document(uid).collection("favourites")
+                    .get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                @Override
+                public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                    List<DocumentSnapshot> snapshots = queryDocumentSnapshots.getDocuments();
+                    List<String> temp = new ArrayList<>();
+                    for(DocumentSnapshot snapshot: snapshots){
+                        temp.add(snapshot.getId());
+                    }
+                    favIds = new ArrayList<>(temp);
+                }
+            });
             return getInstance().query(Arrays.asList(strings));
         }
 

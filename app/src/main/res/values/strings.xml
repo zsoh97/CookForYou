@@ -49,5 +49,5 @@
     <string name="sort_item_title">Sort</string>
     <string name="query_item_title">Ingredients</string>
     <string name="most_popular_item_title">Most Popular</string>
-    <string name="favourites_loading_text">Fetching favourites</string>
+    <string name="favourites_loading">Fetching favourites</string>
 </resources>

@@ -12,13 +12,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.cookforyou.model.Recipe;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QuerySnapshot;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static com.example.cookforyou.FavouriteFragment.mFavThumbnailDownloader;
@@ -28,38 +24,30 @@ public class FavouriteAdapter extends RecyclerView.Adapter<FavouriteAdapter.Favo
     private List<Recipe> mRecipeList;
     private Context mContext;
     private OnRecipeClickListener mOnRecipeClickListener;
-    private List<String> userFavId = new ArrayList<>();
+    private List<String> userFavId;
     private String uid;
     private FirebaseFirestore db;
 
-    public FavouriteAdapter(List<Recipe> recipeList, Context context, OnRecipeClickListener onRecipeClickListener){
+    public FavouriteAdapter(List<Recipe> recipeList, List<String> favIds, Context context, OnRecipeClickListener onRecipeClickListener){
         mRecipeList = recipeList;
+        userFavId = favIds;
         mContext = context;
         mOnRecipeClickListener = onRecipeClickListener;
         uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         db = FirebaseFirestore.getInstance();
-        db.collection("UserDetails").document(uid).collection("favourites")
-                .get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-            @Override
-            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                List<DocumentSnapshot> snapshots = queryDocumentSnapshots.getDocuments();
-                for(DocumentSnapshot snapshot: snapshots){
-                    userFavId.add(snapshot.getId());
-                }
-            }
-        });
     }
     @Override
-    public void onBindViewHolder(final @NonNull FavouriteAdapter.FavouriteHolder favouriteHolder, final int i) {
+    public void onBindViewHolder(@NonNull FavouriteAdapter.FavouriteHolder favouriteHolder, final int i) {
         final Recipe recipe = mRecipeList.get(i);
         mFavThumbnailDownloader.queueThumbnail(favouriteHolder, recipe.getThumbnailUrl());
         favouriteHolder.bindTitle(recipe.getTitle());
         favouriteHolder.mFav.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                ImageView imageView = (ImageView) v;
                     db.collection("UserDetails").document(uid).collection("favourites").document(recipe.getId()).delete();
                     mRecipeList.remove(recipe);
-                    favouriteHolder.mFav.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_favorite_border_white_24dp));
+                    imageView.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_favorite_border_white_24dp));
                     notifyItemRemoved(i);
                     Toast.makeText(mContext, "Recipe removed from Favourites", Toast.LENGTH_SHORT).show();
             }
