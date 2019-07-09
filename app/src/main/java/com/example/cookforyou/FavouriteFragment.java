@@ -62,7 +62,11 @@ public class FavouriteFragment extends Fragment implements FavouriteAdapter.OnRe
                     mRecipeList.add(snapshot.toObject(Recipe.class));
                 }
                 mFavouriteAdapter.notifyDataSetChanged();
-                completeLoadingScreen();
+                if(mRecipeList.isEmpty()) {
+                    completeLoadingScreen(true);
+                } else {
+                    completeLoadingScreen(false);
+                }
             }
         });
         setupAdapter();
@@ -113,6 +117,7 @@ public class FavouriteFragment extends Fragment implements FavouriteAdapter.OnRe
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        if(mFavThumbnailDownloader == null) return;
         mFavThumbnailDownloader.clearQueue();
     }
 
@@ -140,8 +145,12 @@ public class FavouriteFragment extends Fragment implements FavouriteAdapter.OnRe
         startActivity(intent);
     }
 
-    private void completeLoadingScreen() {
+    private void completeLoadingScreen(boolean isDataEmpty) {
         mLoadingGroup.setVisibility(View.GONE);
-        mRecyclerGroup.setVisibility(View.VISIBLE);
+        if(isDataEmpty) {
+            mFailGroup.setVisibility(View.VISIBLE);
+        } else {
+            mRecyclerGroup.setVisibility(View.VISIBLE);
+        }
     }
 }

@@ -113,6 +113,10 @@ public class HomeFragment extends Fragment implements Dialog.AddIngredientDialog
                                 }
                             }
                         }
+                        /*
+                        This code here removes the , character from the last ingredient
+                        string that is to be displayed in the toast.
+                         */
                         Ingredient ing = toDelete.get(toDelete.size()-1);
                         String ingredientName = ing.getmText();
                         deleteIngredient(ingredientName);
@@ -125,6 +129,8 @@ public class HomeFragment extends Fragment implements Dialog.AddIngredientDialog
                         }
                         String ingredientsDeleted = sb.toString().trim();
                         Toast.makeText(getActivity().getApplicationContext(), ingredientsDeleted + " successfully deleted", Toast.LENGTH_SHORT).show();
+                        //Ensures any cleanup activity after deletion of data is done.
+                        mAdapter.notifySuccessfulDeletion();
                     }
                 }
             });
@@ -143,9 +149,6 @@ public class HomeFragment extends Fragment implements Dialog.AddIngredientDialog
         mRecyclerView = getActivity().findViewById(R.id.recyclerView);
         mRecyclerView.setHasFixedSize(true);
         mLayoutManager = new LinearLayoutManager(getActivity().getApplicationContext());
-        mAdapter = new IngredientAdapter(ingredientList, getContext());
-        mRecyclerView.setLayoutManager(mLayoutManager);
-        mRecyclerView.setAdapter(mAdapter);
     }
 
     //Opens Dialog for user input of new ingredients
@@ -199,7 +202,9 @@ public class HomeFragment extends Fragment implements Dialog.AddIngredientDialog
                 for(String s : ingredientString){
                     ingredientList.add(new Ingredient(s));
                 }
-                mAdapter.notifyDataSetChanged();
+                mAdapter = new IngredientAdapter(ingredientList, getContext());
+                mRecyclerView.setLayoutManager(mLayoutManager);
+                mRecyclerView.setAdapter(mAdapter);
             }
         });
     }

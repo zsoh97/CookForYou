@@ -97,12 +97,17 @@ public class IngredientAdapter extends RecyclerView.Adapter<IngredientAdapter.In
                 position = i;
             }
         }
-        for(Ingredient i : ingredientListFull) {
-            if (i.getmText().equals(ingredient)) {
+        for(int i = 0; i < ingredientListFull.size(); i++) {
+            if (ingredientListFull.get(i).getmText().equals(ingredient)) {
                 ingredientListFull.remove(i);
             }
         }
         notifyItemRemoved(position);
+    }
+
+    public void notifySuccessfulDeletion() {
+        //Removes all the checked ingredients that were held by the adapter
+        checkedIngredients = new ArrayList<>();
     }
 
     @Override
