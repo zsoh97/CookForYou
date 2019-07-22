@@ -62,7 +62,6 @@ public class UserDetails implements Serializable {
         data.put(ingredientKey, ingredients);
 
         db.collection(userDetailsKey).document(uid).set(data);
-//        db.collection(userDetailsKey).document(uid).collection("Personal List").document(ingredientKey).set(ingredients);
     }
 
     public void deleteEntry() {

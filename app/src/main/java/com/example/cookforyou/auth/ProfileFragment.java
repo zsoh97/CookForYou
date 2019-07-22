@@ -21,7 +21,7 @@ import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
 public class ProfileFragment extends Fragment {
-    private TextView nameTextView, matricTextView;
+    private TextView nameTextView;
     private ImageView profileImageView;
     private Button updateBtn;
     private Button changePwBtn;
