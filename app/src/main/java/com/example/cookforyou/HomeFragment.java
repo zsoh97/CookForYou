@@ -162,6 +162,7 @@ public class HomeFragment extends Fragment implements Dialog.AddIngredientDialog
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         MenuItem item = menu.findItem(R.id.search_action);
+        item.setVisible(true);
         SearchView searchView = (SearchView) item.getActionView();
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
