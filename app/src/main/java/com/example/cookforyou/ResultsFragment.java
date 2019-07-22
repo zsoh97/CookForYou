@@ -81,7 +81,8 @@ public class ResultsFragment extends Fragment implements ResultsAdapter.OnRecipe
                     @Override
                     public void onThumbnailDownloaded(ResultsAdapter.ResultsHolder target, Bitmap thumbnail) {
                         Log.i(TAG, "Setting downloaded thumbnail");
-                        Drawable drawable = new BitmapDrawable(getResources(), thumbnail);
+                        Bitmap roundedCornerBitmap = ImageHelper.getRoundedCornerBitmap(thumbnail, 20);
+                        Drawable drawable = new BitmapDrawable(getResources(), roundedCornerBitmap);
                         target.bindDrawable(drawable);
                     }
                 }

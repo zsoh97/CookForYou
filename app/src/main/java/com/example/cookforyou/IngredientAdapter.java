@@ -1,7 +1,9 @@
 package com.example.cookforyou;
 
+import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,14 +13,22 @@ import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.TextView;
 
+import com.example.cookforyou.database.Database;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public class IngredientAdapter extends RecyclerView.Adapter<IngredientAdapter.IngredientViewHolder> implements Filterable {
     private List<Ingredient> ingredientList;
-    private Context mContext;
+    private HomeFragment mFragment;
     private List<Ingredient> ingredientListFull;
+    private Ingredient mRecentlyDeletedIngredient;
+    private int mRecentlyDeletedPosition;
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
     protected List<Ingredient> checkedIngredients = new ArrayList<>();
 
     public static class IngredientViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
@@ -46,8 +56,8 @@ public class IngredientAdapter extends RecyclerView.Adapter<IngredientAdapter.In
         }
     }
 
-    public IngredientAdapter(List<Ingredient> ingredients, Context context){
-        this.mContext = context;
+    public IngredientAdapter(List<Ingredient> ingredients, HomeFragment fragment) {
+        this.mFragment = fragment;
         this.ingredientList = ingredients;
         this.ingredientListFull = new ArrayList<>(ingredientList);
     }
@@ -103,6 +113,35 @@ public class IngredientAdapter extends RecyclerView.Adapter<IngredientAdapter.In
             }
         }
         notifyItemRemoved(position);
+    }
+
+    public void deleteIngredient(int pos) {
+        mRecentlyDeletedIngredient = ingredientList.remove(pos);
+        mRecentlyDeletedPosition = pos;
+        db.collection("UserDetails").document(FirebaseAuth.getInstance().getUid()).update("Ingredients", FieldValue.arrayRemove(mRecentlyDeletedIngredient.getmText()));
+        ingredientListFull.remove(pos);
+        notifyItemRemoved(pos);
+        showSnackbar();
+    }
+
+    private void showSnackbar() {
+        View view = mFragment.getActivity().findViewById(R.id.main_coordinator_layout);
+        Snackbar undoSnackbar = Snackbar.make(view, "Deleted", Snackbar.LENGTH_LONG);
+        undoSnackbar.setAction("undo", new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                undoDelete();
+            }
+        });
+        undoSnackbar.show();
+    }
+
+    private void undoDelete() {
+        ingredientList.add(mRecentlyDeletedPosition, mRecentlyDeletedIngredient);
+        ingredientListFull.add(mRecentlyDeletedPosition,mRecentlyDeletedIngredient);
+        notifyItemInserted(mRecentlyDeletedPosition);
+        db.collection("UserDetails").document(FirebaseAuth.getInstance().getUid()).update("Ingredients", FieldValue.arrayUnion(mRecentlyDeletedIngredient.getmText()));
     }
 
     public void notifySuccessfulDeletion() {

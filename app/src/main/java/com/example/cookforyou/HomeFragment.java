@@ -9,6 +9,8 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
+import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -31,6 +33,8 @@ import java.util.List;
 
 public class HomeFragment extends Fragment implements Dialog.AddIngredientDialogListener {
 
+    private static final String TAG = "HomeFragment";
+
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
     private RecyclerView mRecyclerView;
@@ -41,6 +45,7 @@ public class HomeFragment extends Fragment implements Dialog.AddIngredientDialog
     private Button queryBtn;
     private Button addIngredientBtn;
     private ImageButton removeBtn;
+    private View mForegroundView;
     private String uid;
 
     public HomeFragment() {
@@ -54,7 +59,8 @@ public class HomeFragment extends Fragment implements Dialog.AddIngredientDialog
 
         queryBtn = getActivity().findViewById(R.id.queryBtn);
         addIngredientBtn = getActivity().findViewById(R.id.addIngredientBtn);
-        removeBtn = getActivity().findViewById(R.id.removeBtn);
+//        removeBtn = getActivity().findViewById(R.id.removeBtn);
+        mForegroundView = view.findViewById(R.id.viewForeground);
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
         //change to welcome fragment if user not logged in
@@ -93,47 +99,47 @@ public class HomeFragment extends Fragment implements Dialog.AddIngredientDialog
                     openDialog();
                 }
             });
-            removeBtn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if(mAdapter.checkedIngredients.isEmpty()){
-                        Toast.makeText(getActivity().getApplicationContext(), "No ingredient selected", Toast.LENGTH_SHORT).show();
-                    }else {
-                        List<Ingredient> toDelete = mAdapter.checkedIngredients;
-                        StringBuilder sb = new StringBuilder();
-                        for(int j = 0; j < toDelete.size() - 1; j++){
-                            Ingredient ing = toDelete.get(j);
-                            String ingredientName = ing.getmText();
-                            deleteIngredient(ingredientName);
-                            sb.append(ingredientName + ", ");
-                            ingredientString.remove(ing);
-                            for(Ingredient i : ingredientList){
-                                if( i.getmText().equals(ing)){
-                                    ingredientList.remove(i);
-                                }
-                            }
-                        }
-                        /*
-                        This code here removes the , character from the last ingredient
-                        string that is to be displayed in the toast.
-                         */
-                        Ingredient ing = toDelete.get(toDelete.size()-1);
-                        String ingredientName = ing.getmText();
-                        deleteIngredient(ingredientName);
-                        sb.append(ingredientName);
-                        ingredientString.remove(ing);
-                        for(Ingredient i : ingredientList){
-                            if( i.getmText().equals(ing)){
-                                ingredientList.remove(i);
-                            }
-                        }
-                        String ingredientsDeleted = sb.toString().trim();
-                        Toast.makeText(getActivity().getApplicationContext(), ingredientsDeleted + " successfully deleted", Toast.LENGTH_SHORT).show();
-                        //Ensures any cleanup activity after deletion of data is done.
-                        mAdapter.notifySuccessfulDeletion();
-                    }
-                }
-            });
+//            removeBtn.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    if(mAdapter.checkedIngredients.isEmpty()){
+//                        Toast.makeText(getActivity().getApplicationContext(), "No ingredient selected", Toast.LENGTH_SHORT).show();
+//                    }else {
+//                        List<Ingredient> toDelete = mAdapter.checkedIngredients;
+//                        StringBuilder sb = new StringBuilder();
+//                        for(int j = 0; j < toDelete.size() - 1; j++){
+//                            Ingredient ing = toDelete.get(j);
+//                            String ingredientName = ing.getmText();
+//                            deleteIngredient(ingredientName);
+//                            sb.append(ingredientName + ", ");
+//                            ingredientString.remove(ing);
+//                            for(Ingredient i : ingredientList){
+//                                if( i.getmText().equals(ing)){
+//                                    ingredientList.remove(i);
+//                                }
+//                            }
+//                        }
+//                        /*
+//                        This code here removes the , character from the last ingredient
+//                        string that is to be displayed in the toast.
+//                         */
+//                        Ingredient ing = toDelete.get(toDelete.size()-1);
+//                        String ingredientName = ing.getmText();
+//                        deleteIngredient(ingredientName);
+//                        sb.append(ingredientName);
+//                        ingredientString.remove(ing);
+//                        for(Ingredient i : ingredientList){
+//                            if( i.getmText().equals(ing)){
+//                                ingredientList.remove(i);
+//                            }
+//                        }
+//                        String ingredientsDeleted = sb.toString().trim();
+//                        Toast.makeText(getActivity().getApplicationContext(), ingredientsDeleted + " successfully deleted", Toast.LENGTH_SHORT).show();
+//                        //Ensures any cleanup activity after deletion of data is done.
+//                        mAdapter.notifySuccessfulDeletion();
+//                    }
+//                }
+//            });
         } else {
             FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
             ft.replace(R.id.content_frame, WelcomeFragment.newInstance());
@@ -203,9 +209,13 @@ public class HomeFragment extends Fragment implements Dialog.AddIngredientDialog
                 for(String s : ingredientString){
                     ingredientList.add(new Ingredient(s));
                 }
-                mAdapter = new IngredientAdapter(ingredientList, getContext());
+                mAdapter = new IngredientAdapter(ingredientList, HomeFragment.this);
                 mRecyclerView.setLayoutManager(mLayoutManager);
                 mRecyclerView.setAdapter(mAdapter);
+                ItemTouchHelper itemTouchHelper = new ItemTouchHelper(
+                        new HomeItemTouchHelperCallback(
+                                0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT, mAdapter));
+                itemTouchHelper.attachToRecyclerView(mRecyclerView);
             }
         });
     }
