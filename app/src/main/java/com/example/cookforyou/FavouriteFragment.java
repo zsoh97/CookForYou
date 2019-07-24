@@ -51,6 +51,7 @@ public class FavouriteFragment extends Fragment implements FavouriteAdapter.OnRe
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getActivity().setTitle("Favourites");
         mAuth = FirebaseAuth.getInstance();
         String uid = mAuth.getCurrentUser().getUid();
         db = FirebaseFirestore.getInstance();
